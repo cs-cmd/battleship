@@ -11,8 +11,11 @@ const Ship = (boatSize) => {
         }
     }
 
+    const getStatus = () => isDestroyed;
+
     return {
         applyDamage,
+        getStatus,
     }
 }
 
