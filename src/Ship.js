@@ -3,7 +3,7 @@ const Ship = (boatSize) => {
     let hits = 0;
     let isDestroyed = false;
 
-    const hit = () => {
+    const hit = (x, y) => {
         if (!isDestroyed && size === ++hits) {
             isDestroyed = true;
         }
@@ -12,10 +12,12 @@ const Ship = (boatSize) => {
     }
 
     const isSunk = () => isDestroyed;
+    const getSize = () => size;
 
     return {
         hit,
         isSunk,
+        getSize,
     }
 }
 
