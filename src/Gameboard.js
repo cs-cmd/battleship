@@ -15,7 +15,7 @@ const Gameboard = () => {
         [null,null,null,null,null,null,null,null,null,null],
     ];
 
-    const shipsOnBoard = 0;
+    let shipsOnBoard = 0;
 
     // direction is either horizontal (H) or vertical (V)
     const placeShip = (baseX, baseY, direction, length) => {
@@ -38,6 +38,7 @@ const Gameboard = () => {
             return error;
         }
 
+        shipsOnBoard++;
         return null;
     }
 
@@ -121,9 +122,10 @@ const Gameboard = () => {
     }
 
     const getShip = (x, y) => gameboard[x][y].ship;
+    const getUnsunkShipCount = () => shipsOnBoard;
 
     const receiveAttack = (x, y) => {
-        const spot = gameboard[x][y];
+        let spot = gameboard[x][y];
 
         if (spot === null) {
             spot = {
@@ -133,21 +135,26 @@ const Gameboard = () => {
             return null;
         } 
 
-        if (spot.wasHit ||
-            spot.ship.isSunk()) {
+        if (spot.wasHit) {
             return false;
-        }
-        else {
+        } else if (spot.ship.isSunk()) {
+            shipsOnBoard--;
+            return false;
+        } else {
             spot.ship.hit();
             spot.wasHit = true;
+            return true;
         }
     }
+
+
 
     return {
         receiveAttack, 
         placeShip,
         displayBoard,
         getShip,
+        getUnsunkShipCount
     }
 }
 

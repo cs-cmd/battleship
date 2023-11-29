@@ -1,0 +1,36 @@
+.gameboard-main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.gameboard {
+    width: clamp(250px, 90%, 500px);
+    display: grid;
+    grid-template-columns: repeat(10, 10%);
+}
+
+/* Gameboard is 10x10, tiles are 10% of width of parent */
+.tile {
+    aspect-ratio: 1/1;
+    background-color: white;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+.tile.was-hit {
+    background-color: grey;
+}
+
+.tile.was-hit.had-ship {
+    background-color: red;
+}
+
+.ai .tile:hover{
+    filter: brightness(75%);
+}
+
+.has-ship {
+    background-color: black;
+}
