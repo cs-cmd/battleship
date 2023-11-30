@@ -6,8 +6,8 @@ const controller = (() => {
     const AI = new PlayerBoard();
     AI.generateCoords = () => {
         return {
-            x: Math.floor(Math.random() * 9),
-            y: Math.floor(Math.random() * 9),
+            x: Math.round(Math.random() * 9),
+            y: Math.round(Math.random() * 9),
         };
     }
 

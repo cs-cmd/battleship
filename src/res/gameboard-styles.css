@@ -17,6 +17,7 @@
     background-color: white;
     border: 1px solid black;
     box-sizing: border-box;
+    border-radius: 2px;
 }
 
 .tile.was-hit {

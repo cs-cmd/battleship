@@ -1,6 +1,41 @@
+:root {
+    --main-background: #1f68de;
+}
+html {
+    height: 100dvh;
+}
+
 body {
     text-align: center;
     display: flex;
     flex-direction: column;
+    background-color: var(--main-background);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.title-text {
+    letter-spacing: .25rem;
+}
+
+.footer-block {
+    display: flex;
     justify-content: center;
+    align-items: center;
+    margin-top: auto;
+}
+
+.footer-text {
+    margin: 0px;
+    padding: 0px;
+}
+
+.source-link {
+    height: 24px;
+}
+
+.link-icon:hover {
+    fill: white;
 }

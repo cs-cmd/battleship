@@ -17,7 +17,6 @@ for(let i = 0; i < 10; i++) {
         tile.setAttribute('y', j);
 
         const playerTile = tile.cloneNode();
-        playerTile.classList.add('player-tile');
         playerTile.addEventListener('click', () => {
             placeShipPiece(i, j);
         });
