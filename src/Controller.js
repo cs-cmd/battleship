@@ -39,8 +39,8 @@ const controller = (() => {
 
         
         return {
-            playerMsg: moveResponse.msg,
-            aiMsg: aiResponse.msg,
+            playerRes: moveResponse,
+            aiRes: aiResponse,
             aiX,
             aiY,
         };
@@ -59,9 +59,6 @@ const controller = (() => {
         } else if(hitResponse.hitRes === false) {
             // spot was already hit, make move again
             msg = 'ALREADY_HIT';
-        } else if (hitResponse.hasNoShips) {
-            // has no ships left
-            msg = 'VICTORY'
         } else {
             // successful hit
             msg = 'SUCCESSFUL_HIT';
@@ -70,7 +67,8 @@ const controller = (() => {
 
         return {
             msg,
-            wasValid
+            wasValid,
+            hasNoShips: hitResponse.hasNoShips,
         }
     }
 

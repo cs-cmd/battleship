@@ -62,17 +62,15 @@ function handleTileClick(parent, tile) {
         return;
     }
 
-    let playerMsg = moveTurn.playerMsg;
-    let aiMsg = moveTurn.aiMsg;
+    const playerMsg = moveTurn.playerRes.msg;
+    const playerWins = moveTurn.playerRes.hasNoShips;
 
-    if(playerMsg === 'VICTORY') {
-        writeStatusText('You win!');
+    if(resolveAttack('Player', tile, playerMsg, playerWins)) {
         return;
-    } else if (playerMsg === 'EMPTY_SPACE') {
-        tile.classList.add('was-hit');
-    } else if (playerMsg === 'SUCCESSFUL_HIT') {
-        tile.classList.add('was-hit', 'had-ship');
     }
+
+    const aiMsg = moveTurn.aiRes.msg;
+    const aiWins = moveTurn.aiRes.hasNoShips;
 
     const aiSelectedTile = document.querySelector(`.player .tile[x='${moveTurn.aiX}'][y='${moveTurn.aiY}']`);
     
@@ -83,18 +81,37 @@ function handleTileClick(parent, tile) {
         return;
     }
 
-    if (aiMsg === 'VICTORY') {
-        writeStatusText('Computer wins!');
+    if (resolveAttack('Computer', aiSelectedTile, aiMsg, aiWins)) {
         return;
-    } else if(aiMsg === 'EMPTY_SPACE') {
-        aiSelectedTile.classList.add('was-hit');
-    } else if(aiMsg === 'SUCCESSFUL_HIT') {
-        aiSelectedTile.classList.add('was-hit', 'had-ship');
     }
+
 
     isPlayerTurn = true;
 }
 
+function resolveAttack(player, tile, msg, wins) {
+    applyUiHitMarker(tile, msg);
+    return determineVictory(player, wins);
+}
+
+function applyUiHitMarker(tile, msg) {
+    if(msg === 'EMPTY_SPACE') {
+        tile.classList.add('was-hit');
+    } else if(msg === 'SUCCESSFUL_HIT') {
+        tile.classList.add('was-hit', 'had-ship');
+    }
+}
+
+function determineVictory(player, winStatus) {
+    if (winStatus) {
+        setTimeout(() => {
+            writeStatusText(`${player} has conquered!`)
+        }, 0);
+        return true;
+    } else {
+        return false;
+    }
+}
 function resetBoard() {
 
 }
