@@ -39,3 +39,61 @@ body {
 .link-icon:hover {
     fill: white;
 }
+
+.direction-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.direction-info > * {
+    flex: 0 0 33%;
+}
+
+.change-axis-button {
+    padding: 0px 1rem;
+    border: 1px solid black;
+    display: flex;
+    max-width: 75px;
+}
+.moving-icon {
+    background-color: black;
+    width: fit-content;
+    margin-right: auto;
+}
+
+.moving-icon.right {
+    margin-left: auto;
+    margin-right: 0px;
+}
+
+
+.direction-label:first-of-type {
+    text-align: end;;
+}
+
+.direction-label:last-of-type {
+    text-align: start;
+}
+
+.change-axis-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.change-axis-button {
+    margin: 1rem;
+    border: none;
+    padding: .25rem;
+}
+
+.game-status > * {
+    margin: .5rem;
+}
+
+.direction-info {
+    transition: opacity .25s;
+}
+.hidden {
+    opacity: 0%;
+}

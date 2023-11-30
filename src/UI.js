@@ -4,7 +4,10 @@ import controller from "./Controller.js";
 
 const playerGameboard = document.querySelector('.gameboard.player');
 const aiGameboard = document.querySelector('.gameboard.ai');
-const gameStatusHeader = document.getElementById('status-text')
+const gameStatusHeader = document.getElementById('status-text');
+const directionDiv = document.querySelector('.direction-info');
+const changeAxisButton = document.getElementById('change-axis-button');
+const changeAxisMovingIcon = document.getElementById('moving-icon')
 let isPlayerTurn = false;
 let isPlacement = true;
 
@@ -35,8 +38,6 @@ for(let i = 0; i < 10; i++) {
         aiGameboard.appendChild(aiTile);
     }
 }
-
-
 
 
 function handleTileClick(parent, tile) {
@@ -111,6 +112,7 @@ function determineVictory(player, winStatus) {
         return false;
     }
 }
+
 function resetBoard() {
 
 }
@@ -119,13 +121,43 @@ function placeAiPieces() {
     controller.populateAiBoard();
 }
 
+
+
+
 let currentShipLength = 5;
 let direction = 'H';
+
+changeAxisButton.addEventListener('click', () => {
+    toggleDirection();
+});
+
 writeTitleForShip();
+
+let canChangeAxis = false;
+playerGameboard.addEventListener('mouseover', () => {
+    canChangeAxis = true;
+    // enable horizontal/vertical changes with right mouse click'
+    // draw rectangle the size of shiplength*tilesize based on 
+    // where mouseis
+});
+playerGameboard.addEventListener('mouseout', () => {
+    canChangeAxis = false;
+    // disable axis changes
+});
+playerGameboard.addEventListener('click', (e) => {
+    if(!canChangeAxis &&
+        e.target != playerGameboard) {
+            return;
+    }
+
+    console.log(e);
+})
 
 function toggleDirection() {
     direction = (direction === 'H') ? 'V' : 'H';
+    changeAxisMovingIcon.classList.toggle('right');
 }
+
 function displayShipPreview(x, y) {
     // get top-left coord and draw image 
 }
@@ -144,7 +176,13 @@ function placeShipPiece(x, y) {
     switch(direction) {
         case 'H':
             for(let i = y; i < y + currentShipLength; i++) {
-                let tile = document.querySelector(`.tile[x='${x}'][y='${i}']`);
+                let tile = document.querySelector(`.player .tile[x='${x}'][y='${i}']`);
+                tile.classList.add('has-ship');
+            }
+            break;
+        case 'V':
+            for(let i = x; i < x + currentShipLength; i++) {
+                let tile = document.querySelector(`.player .tile[x='${i}'][y='${y}']`)
                 tile.classList.add('has-ship');
             }
     }
@@ -169,6 +207,7 @@ function writeStatusText(msg) {
 function beginGame() {
     isPlacement = false;
     isPlayerTurn = true;
+    directionDiv.classList.add('hidden');
     writeStatusText('Choose enemy node');
 }
 
