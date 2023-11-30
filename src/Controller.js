@@ -29,7 +29,8 @@ const controller = (() => {
 
             aiResponse = controllerApplyHit(player, x, y);
             
-            if(!aiResponse.wasValid) {
+            if(!aiResponse.wasValid || 
+                aiResponse.msg === 'ALREADY_HIT') {
                 continue;
             } 
             aiX = x;
