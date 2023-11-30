@@ -15,11 +15,14 @@ const Gameboard = () => {
         [null,null,null,null,null,null,null,null,null,null],
     ];
 
+    // number of ships on user's board
     let shipsOnBoard = 0;
 
-    // direction is either horizontal (H) or vertical (V)
+    // direction is either horizontal (H) or vertical (V),
+    // returns error message, or null if
     const placeShip = (baseX, baseY, direction, length) => {
         const ship = Ship(length);
+
         try {
             switch(direction) {
                 case 'H':
@@ -31,8 +34,7 @@ const Gameboard = () => {
                     handleVertically(baseX, baseY, ship, addShipNode);
                     break;
                 default:
-                    console.log(`:: ERROR: Invalid direction: ${direction} ::`);
-                    return;
+                    throw new Error('Invalid direction');
             }
         } catch (error) {
             return error;
@@ -63,18 +65,21 @@ const Gameboard = () => {
         return true;
     }
 
-    const handleVertically = (startX, y, ship, func) => {
+    // run handler for vertical movement
+    const handleVertically = (startX, y, ship, handler) => {
         for(let i = startX; i < startX + ship.getSize(); i++) {
-            func(i, y, ship);
+            handler(i, y, ship);
         }
     }
     
-    const handleHorizontally = (x, startY, ship, func) => {
+    // run handler for horizontal movement
+    const handleHorizontally = (x, startY, ship, handler) => {
         for(let i = startY; i < startY + ship.getSize(); i++) {
-            func(x, i, ship);
+            handler(x, i, ship);
         } 
     }
 
+    // add ship node to board
     const addShipNode = (x, y, ship) => {
         gameboard[x][y] = {
             ship,
@@ -82,6 +87,7 @@ const Gameboard = () => {
         }
     }
 
+    // check if the ship node is valid. Throws errors if it isn't
     const checkShipNode = (x, y) => {
         if (!(x in gameboard && y in gameboard[x])) {
             throw {
@@ -96,6 +102,7 @@ const Gameboard = () => {
         }
     }
 
+    // display board to console
     const displayBoard = () => {
         for(let i = 0; i < gameboard.length; i++) {
             // line to print
@@ -121,12 +128,18 @@ const Gameboard = () => {
         }
     }
 
+    // get ship and unsunk boat count
     const getShip = (x, y) => gameboard[x][y].ship;
     const getUnsunkShipCount = () => shipsOnBoard;
 
+    // receive attack on board for coordinates
+    // returns null on empty spot, false on hit spot,
+    // and true on successful hit
     const receiveAttack = (x, y) => {
         let spot = gameboard[x][y];
 
+        // if spot is null (empty), replace with an object of an empty space noted
+        // as hit
         if (spot === null) {
             gameboard[x][y] = {
                 ship: null,
@@ -142,7 +155,6 @@ const Gameboard = () => {
         spot.wasHit = true;
 
         const ship = spot.ship;
-        
         const wasDestroyed = ship.hit();
 
         if(wasDestroyed) {
@@ -151,8 +163,6 @@ const Gameboard = () => {
 
         return true;
     }
-
-
 
     return {
         receiveAttack, 

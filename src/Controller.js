@@ -2,8 +2,10 @@ import PlayerBoard from './PlayerBoard.js';
 
 // single player
 const controller = (() => {
+    // player and AI boards
     const player = new PlayerBoard();
     const AI = new PlayerBoard();
+    // additional property to generate random coordinates for the board
     AI.generateCoords = () => {
         return {
             x: Math.round(Math.random() * 9),
@@ -11,6 +13,10 @@ const controller = (() => {
         };
     }
 
+    // single player turn. checks if move is valid and applies to
+    // enemy gameboard. 
+    // returns null if the move was invalid;
+    // or an object containing move information for use by the UI
     const makeTurn = (x, y) => {
         const moveResponse = controllerApplyHit(AI, x, y);
         
@@ -23,9 +29,8 @@ const controller = (() => {
         let aiY = -1;
         let run = true;
 
+        // continue generating random numbers between 0 and 9 until it is a valid ove
         do {
-
-            // generate random numbers between 0 and 9 for user
             const { x, y } = AI.generateCoords();
 
             aiResponse = controllerApplyHit(player, x, y);
@@ -37,7 +42,6 @@ const controller = (() => {
             }
         } while(run);
 
-        
         return {
             playerRes: moveResponse,
             aiRes: aiResponse,
@@ -46,49 +50,52 @@ const controller = (() => {
         };
     }
 
+    // apply hit function for use by controller
     const controllerApplyHit = (player, x, y) => {
         const hitResponse = player.applyHit(x, y);
 
-        let msg = '';
+        let message = '';
         let wasValid = false;
 
         if(hitResponse.hitRes === null) {
             // no ship present/empty node
-            msg = 'EMPTY_SPACE';
+            message = 'EMPTY_SPACE';
             wasValid = true;
         } else if(hitResponse.hitRes === false) {
             // spot was already hit, make move again
-            msg = 'ALREADY_HIT';
+            message = 'ALREADY_HIT';
         } else {
             // successful hit
-            msg = 'SUCCESSFUL_HIT';
+            message = 'SUCCESSFUL_HIT';
             wasValid = true;
         }
 
         return {
-            msg,
+            msg: message,
             wasValid,
             hasNoShips: hitResponse.hasNoShips,
         }
     }
 
+    // generates random ship placement for AI player
     const populateAiBoard = () => {
         let currentShipLength = 5;
 
         do {
             const { x, y } = AI.generateCoords();
+
             // generate either horizontal or vertical placement
-            const direction = (Math.floor(Math.random() * 2) === 0) ? 'H' : 'V';
+            const direction = (Math.round(Math.random()) === 0) ? 'H' : 'V';
 
             const error = AI.playerBoard.placeShip(x, y, direction, currentShipLength);
 
             if(error === null) {
                 currentShipLength--;
-
             } 
         } while(currentShipLength > 1);
     }
 
+    // returns either error info or null
     const placePieceOnBoard = (x, y, dir, len) => {
         return player.playerBoard.placeShip(x, y, dir, len);
     }

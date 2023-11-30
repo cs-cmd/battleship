@@ -1,79 +1,114 @@
 import controller from "./Controller.js";
+import GameInitializer from "./GameInitializer.js";
 
-// populate 
-
+// UI elements
 const playerGameboard = document.querySelector('.gameboard.player');
 const aiGameboard = document.querySelector('.gameboard.ai');
 const gameStatusHeader = document.getElementById('status-text');
 const directionDiv = document.querySelector('.direction-info');
-const changeAxisButton = document.getElementById('change-axis-button');
-const changeAxisMovingIcon = document.getElementById('moving-icon')
+
+// Controls whether player can make a strike or place their own pieces
 let isPlayerTurn = false;
 let isPlacement = true;
 
 
+
+
+function writeStatusText(msg) {
+    gameStatusHeader.innerText = msg;
+}
+
+function writeTitleForShip(currentShipLength) {
+    writeStatusText(`Place ship of length ${currentShipLength}`);
+}
+
+function beginGame() {
+    isPlacement = false;
+    isPlayerTurn = true;
+    directionDiv.classList.add('hidden');
+    writeStatusText('Choose enemy node');
+}
+
+const gameInit = GameInitializer(beginGame, writeTitleForShip);
+
+
+// add tiles to page
 for(let i = 0; i < 10; i++) {
     for(let j = 0; j < 10; j++) {
+        // create base tile
         const tile = document.createElement('div');
         tile.classList.add('tile');
         tile.setAttribute('x', i);
         tile.setAttribute('y', j);
 
+        // clone for player tile
         const playerTile = tile.cloneNode();
         playerTile.addEventListener('click', () => {
-            placeShipPiece(i, j);
+            gameInit.placeShipPiece(i, j, controller);
         });
 
+        // handles preview for ship placement
         playerTile.addEventListener('hover', () => {
             displayShipPreview(i, j);
-        })
-
-        playerGameboard.appendChild(playerTile);
-
-        const aiTile = tile.cloneNode();
-        aiTile.addEventListener('click', () => {
-            handleTileClick(aiGameboard, aiTile);
         });
 
+        // clone for AI tile
+        const aiTile = tile.cloneNode();
+        aiTile.addEventListener('click', () => {
+            handleTileClick(aiTile);
+        });
+
+        playerGameboard.appendChild(playerTile);
         aiGameboard.appendChild(aiTile);
     }
 }
 
-
-function handleTileClick(parent, tile) {
-    if (parent === playerGameboard ||
-        isPlayerTurn === false ||
+// handles the tile click
+function handleTileClick(tile) {
+    // if not the players turn, 
+    // is the placement phase,
+    // or the tile was already hit, 
+    // return
+    if (isPlayerTurn === false ||
         isPlacement === true ||
         tile.classList.contains('was-hit')) {
         return;
     }
 
+    // prevent player from attacking until their turn
     isPlayerTurn = false;
 
+    // get coords of tile clicked
     const x = parseInt(tile.getAttribute('x'));
     const y = parseInt(tile.getAttribute('y'));
 
+    // attemp to launch attack on board
     const moveTurn = controller.makeTurn(x, y);
 
+    // moveTurn is null if move was invalid
     if(moveTurn === null) {
         isPlayerTurn = true;
-        // display invalid move icon
         console.log(`:: ERROR: Invalid move: ${moveTurn} ::`);
         return;
     }
 
+    // load player message and win status
     const playerMsg = moveTurn.playerRes.msg;
     const playerWins = moveTurn.playerRes.hasNoShips;
 
+    // resolve the move; if player won, return (game over)
     if(resolveAttack('Player', tile, playerMsg, playerWins)) {
         return;
     }
 
+    // load ai move message and win status
     const aiMsg = moveTurn.aiRes.msg;
     const aiWins = moveTurn.aiRes.hasNoShips;
 
+    // get the tile that the AI has selected
     const aiSelectedTile = document.querySelector(`.player .tile[x='${moveTurn.aiX}'][y='${moveTurn.aiY}']`);
     
+    // if the tile is not valid, error, return 
     if(aiSelectedTile === null) {
         console.log(`:: ERROR: Player board tile (${moveTurn.aiX},${moveTurn.aiY}) not found ::`);
         // display error message
@@ -81,6 +116,7 @@ function handleTileClick(parent, tile) {
         return;
     }
 
+    // resolve the move; if the AI has won, return (game over)
     if (resolveAttack('Computer', aiSelectedTile, aiMsg, aiWins)) {
         return;
     }
@@ -89,11 +125,13 @@ function handleTileClick(parent, tile) {
     isPlayerTurn = true;
 }
 
+// combines UI functionality to resolve a move
 function resolveAttack(player, tile, msg, wins) {
     applyUiHitMarker(tile, msg);
     return determineVictory(player, wins);
 }
 
+// applies UI hit marker to tile selected
 function applyUiHitMarker(tile, msg) {
     if(msg === 'EMPTY_SPACE') {
         tile.classList.add('was-hit');
@@ -102,6 +140,9 @@ function applyUiHitMarker(tile, msg) {
     }
 }
 
+// determines if the player has won
+// set timeout to change status text after
+// UI element has been updated
 function determineVictory(player, winStatus) {
     if (winStatus) {
         setTimeout(() => {
@@ -113,107 +154,5 @@ function determineVictory(player, winStatus) {
     }
 }
 
-function resetBoard() {
-
-}
-
-function placeAiPieces() {
-    controller.populateAiBoard();
-}
-
-
-
-
-let currentShipLength = 5;
-let direction = 'H';
-
-changeAxisButton.addEventListener('click', () => {
-    toggleDirection();
-});
-
-writeTitleForShip();
-
-let canChangeAxis = false;
-playerGameboard.addEventListener('mouseover', () => {
-    canChangeAxis = true;
-    // enable horizontal/vertical changes with right mouse click'
-    // draw rectangle the size of shiplength*tilesize based on 
-    // where mouseis
-});
-playerGameboard.addEventListener('mouseout', () => {
-    canChangeAxis = false;
-    // disable axis changes
-});
-playerGameboard.addEventListener('click', (e) => {
-    if(!canChangeAxis &&
-        e.target != playerGameboard) {
-            return;
-    }
-
-    console.log(e);
-})
-
-function toggleDirection() {
-    direction = (direction === 'H') ? 'V' : 'H';
-    changeAxisMovingIcon.classList.toggle('right');
-}
-
-function displayShipPreview(x, y) {
-    // get top-left coord and draw image 
-}
-
-function placeShipPiece(x, y) {
-    if (currentShipLength <= 1) {
-        return;
-    }
-
-    const response = controller.placePieceOnBoard(x, y, direction, currentShipLength);
-    console.log(response);
-    if (response !== null) {
-        return;
-    }
-
-    switch(direction) {
-        case 'H':
-            for(let i = y; i < y + currentShipLength; i++) {
-                let tile = document.querySelector(`.player .tile[x='${x}'][y='${i}']`);
-                tile.classList.add('has-ship');
-            }
-            break;
-        case 'V':
-            for(let i = x; i < x + currentShipLength; i++) {
-                let tile = document.querySelector(`.player .tile[x='${i}'][y='${y}']`)
-                tile.classList.add('has-ship');
-            }
-    }
-
-    currentShipLength--;
-
-    if(currentShipLength === 1) {
-        beginGame();
-    } else {
-        writeTitleForShip();
-    }
-}
-
-function writeTitleForShip() {
-    writeStatusText(`Place ship of length ${currentShipLength}`);
-}
-
-function writeStatusText(msg) {
-    gameStatusHeader.innerText = msg;
-}
-
-function beginGame() {
-    isPlacement = false;
-    isPlayerTurn = true;
-    directionDiv.classList.add('hidden');
-    writeStatusText('Choose enemy node');
-}
-
-function validatePlacement(tile, axis) {
-
-}
-
-placeAiPieces();
-
+// populate AI board
+controller.populateAiBoard();
