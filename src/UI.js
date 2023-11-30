@@ -58,6 +58,7 @@ function handleTileClick(parent, tile) {
     if(moveTurn === null) {
         isPlayerTurn = true;
         // display invalid move icon
+        console.log(`:: ERROR: Invalid move: ${moveTurn} ::`);
         return;
     }
 

@@ -128,23 +128,28 @@ const Gameboard = () => {
         let spot = gameboard[x][y];
 
         if (spot === null) {
-            spot = {
+            gameboard[x][y] = {
                 ship: null,
                 wasHit: true,
             }
             return null;
         } 
 
-        if (spot.wasHit) {
+        if(spot.wasHit) {
             return false;
-        } else if (spot.ship.isSunk()) {
+        } 
+
+        spot.wasHit = true;
+
+        const ship = spot.ship;
+        
+        const wasDestroyed = ship.hit();
+
+        if(wasDestroyed) {
             shipsOnBoard--;
-            return false;
-        } else {
-            spot.ship.hit();
-            spot.wasHit = true;
-            return true;
-        }
+        } 
+
+        return true;
     }
 
 

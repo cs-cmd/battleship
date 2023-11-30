@@ -21,6 +21,7 @@ const controller = (() => {
         let aiResponse;
         let aiX = -1;
         let aiY = -1;
+        let run = true;
 
         do {
 
@@ -28,14 +29,13 @@ const controller = (() => {
             const { x, y } = AI.generateCoords();
 
             aiResponse = controllerApplyHit(player, x, y);
-            
-            if(!aiResponse.wasValid || 
-                aiResponse.msg === 'ALREADY_HIT') {
-                continue;
-            } 
-            aiX = x;
-            aiY = y;
-        } while(!aiResponse.wasValid);
+             
+            if (aiResponse.wasValid) {
+                    aiX = x;
+                    aiY = y;
+                    run = false;
+            }
+        } while(run);
 
         
         return {
