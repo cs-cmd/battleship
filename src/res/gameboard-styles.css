@@ -1,3 +1,11 @@
+:root {
+    --background-valid: #0ECE72;
+    --background-invalid: #D30909;
+
+    --background-has-ship: #3D3535;
+    --background-miss: #CE840675; 
+}
+
 .gameboard-main {
     width: 100%;
     display: flex;
@@ -21,7 +29,7 @@
 }
 
 .tile.was-hit {
-    background-color: grey;
+    background-color: var(--background-miss);
 }
 
 .tile.was-hit.had-ship {
@@ -33,5 +41,12 @@
 }
 
 .has-ship {
-    background-color: black;
+    background-color: var(--background-has-ship);
+}
+
+.tile.is-valid {
+    background-color: var(--background-valid);
+}
+.tile.is-invalid {
+    background-color: var(--background-invalid);
 }

@@ -1,4 +1,4 @@
-const GameInitializer = (beginGame, writeTitleForShip) => {
+const GameInitializer = (beginGame, writeStatusText) => {
     // UI elements
     const changeAxisButton = document.getElementById('change-axis-button');
     const changeAxisMovingIcon = document.getElementById('moving-icon');
@@ -11,6 +11,10 @@ const GameInitializer = (beginGame, writeTitleForShip) => {
     changeAxisButton.addEventListener('click', () => {
         toggleDirection();
     });
+
+    function writeTitleForShip(currentShipLength) {
+        writeStatusText(`Place ship of length ${currentShipLength}`);
+    }
 
     // change direction 
     function toggleDirection() {
@@ -62,8 +66,49 @@ const GameInitializer = (beginGame, writeTitleForShip) => {
     // Initialize ship length
     writeTitleForShip(5);
 
+    // and array of HTML elements to remove
+    let tilesToPreview = [];
+
+    const displayShipPreview = (x, y) => {
+
+        let classToAdd = 'is-valid';
+
+        switch(direction) {
+            case 'H':
+                if (y + currentShipLength > 10) {
+                    classToAdd = 'is-invalid';
+                }
+                for(let i = y; i < y + currentShipLength; i++) {
+                    const tile = document.querySelector(`.player .tile[x="${x}"][y="${i}"]`);
+                    tile.classList.add(classToAdd);
+                    tilesToPreview.push(tile);
+                }
+                break;
+            case 'V':
+                if (x + currentShipLength > 10) {
+                    classToAdd = 'is-invalid';
+                }
+                for(let i = x; i < x + currentShipLength; i++) {
+                    const tile = document.querySelector(`.player .tile[x="${i}"][y="${y}"]`);
+                    tile.classList.add(classToAdd);
+                    tilesToPreview.push(tile);
+                }
+                break;
+        }
+    }
+
+    // removes style from tiles and resets array
+    const resetTiles = () => {
+        for(let i = tilesToPreview.length - 1; i >= 0; i--) {
+            tilesToPreview[i].classList.remove('is-valid', 'is-invalid');
+            tilesToPreview.splice(i);
+        }
+    }
+
     return {
         placeShipPiece,
+        displayShipPreview,
+        resetTiles,
     }
 };
 

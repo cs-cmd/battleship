@@ -1,27 +1,22 @@
-import controller from "./Controller.js";
+import controller from "../controller/Controller.js";
 import GameInitializer from "./GameInitializer.js";
 
 // UI elements
 const playerGameboard = document.querySelector('.gameboard.player');
 const aiGameboard = document.querySelector('.gameboard.ai');
-const gameStatusHeader = document.getElementById('status-text');
 const directionDiv = document.querySelector('.direction-info');
 
 // Controls whether player can make a strike or place their own pieces
 let isPlayerTurn = false;
 let isPlacement = true;
 
-
-
-
+// Writes status message to status text element
 function writeStatusText(msg) {
+    const gameStatusHeader = document.getElementById('status-text');
     gameStatusHeader.innerText = msg;
 }
 
-function writeTitleForShip(currentShipLength) {
-    writeStatusText(`Place ship of length ${currentShipLength}`);
-}
-
+// Marks the start of the game
 function beginGame() {
     isPlacement = false;
     isPlayerTurn = true;
@@ -29,7 +24,17 @@ function beginGame() {
     writeStatusText('Choose enemy node');
 }
 
-const gameInit = GameInitializer(beginGame, writeTitleForShip);
+
+
+const gameInit = GameInitializer(beginGame, writeStatusText);
+
+function handlePreviewMouseOver(x, y) {
+    gameInit.displayShipPreview(x, y);
+}
+
+function handlePreviewMouseOut() {
+    gameInit.resetTiles();
+}
 
 
 // add tiles to page
@@ -48,9 +53,15 @@ for(let i = 0; i < 10; i++) {
         });
 
         // handles preview for ship placement
-        playerTile.addEventListener('hover', () => {
-            displayShipPreview(i, j);
+        playerTile.addEventListener('mouseover', () => {
+            if (!isPlacement) {
+                return;
+            }
+            gameInit.displayShipPreview(i, j);
         });
+        playerTile.addEventListener('mouseout', () => {
+            gameInit.resetTiles();
+        })
 
         // clone for AI tile
         const aiTile = tile.cloneNode();

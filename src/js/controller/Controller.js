@@ -1,4 +1,4 @@
-import PlayerBoard from './PlayerBoard.js';
+import PlayerBoard from '../model/PlayerBoard.js';
 
 // single player
 const controller = (() => {
