@@ -69,31 +69,56 @@ const GameInitializer = (beginGame, writeStatusText) => {
     // and array of HTML elements to remove
     let tilesToPreview = [];
 
+    // display's ship preview to tiles
     const displayShipPreview = (x, y) => {
-
+        let hasShip = false;
+        let isInvalidIndex = false;
+        let endIndex = 0;
         let classToAdd = 'is-valid';
 
         switch(direction) {
             case 'H':
-                if (y + currentShipLength > 10) {
-                    classToAdd = 'is-invalid';
+                // get the ending index
+                endIndex = y + currentShipLength;
+                // if out of bounds, invalid selection
+                if(endIndex > 10) {
+                    isInvalidIndex = true;
                 }
+                // get all tiles that will be included in the preview
                 for(let i = y; i < y + currentShipLength; i++) {
                     const tile = document.querySelector(`.player .tile[x="${x}"][y="${i}"]`);
-                    tile.classList.add(classToAdd);
+                    if(tile.classList.contains('has-ship')) {
+                        hasShip = true;
+                    }
                     tilesToPreview.push(tile);
                 }
                 break;
             case 'V':
-                if (x + currentShipLength > 10) {
-                    classToAdd = 'is-invalid';
+                // get the ending index
+                endIndex = x + currentShipLength;
+                // if out of bounds, invalid selection
+                if(endIndex > 10) {
+                    isInvalidIndex = true;
                 }
+                // get all tiles that will be included in the preview
                 for(let i = x; i < x + currentShipLength; i++) {
                     const tile = document.querySelector(`.player .tile[x="${i}"][y="${y}"]`);
-                    tile.classList.add(classToAdd);
+                    if(tile.classList.contains('has-ship')) {
+                        hasShip = true;
+                    }
                     tilesToPreview.push(tile);
                 }
                 break;
+        }
+
+ 
+        if (hasShip || isInvalidIndex) {
+            classToAdd = 'is-invalid';
+        }
+
+        // Add styling to 
+        for(let i = 0; i < tilesToPreview.length; i++) {
+            tilesToPreview[i].classList.add(classToAdd);
         }
     }
 

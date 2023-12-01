@@ -20,24 +20,42 @@ function writeStatusText(msg) {
 
 // Marks the start of the game
 function beginGame() {
-    isPlacement = false;
     isPlayerTurn = true;
+
+    // Hide direction section from user
     directionDiv.classList.add('hidden');
+    
+    // reset tiles
+    gameInit.resetTiles();
+    isPlacement = false;
+
     writeStatusText('Choose enemy node');
 }
 
-
-
+// game initialization object
 const gameInit = GameInitializer(beginGame, writeStatusText);
 
-function handlePreviewMouseOver(x, y) {
-    gameInit.displayShipPreview(x, y);
+// used for when the tile is placed and display preview needs to be updated
+function handlePreviewMouseOver(evt) {
+    let i = parseInt(evt.target.getAttribute('x'));
+    let j = parseInt(evt.target.getAttribute('y'));
+    
+    handlePreview(i, j);
 }
 
+// reset's tiles styling
 function handlePreviewMouseOut() {
     gameInit.resetTiles();
 }
 
+// Determines if the preview will actually be displayed
+// does nothing if not in placement mode
+function handlePreview(x, y) {
+    if(!isPlacement) {
+        return;
+    }
+    gameInit.displayShipPreview(x, y);
+}
 
 // add tiles to page
 for(let i = 0; i < 10; i++) {
@@ -50,20 +68,16 @@ for(let i = 0; i < 10; i++) {
 
         // clone for player tile
         const playerTile = tile.cloneNode();
+        // resets tiles, places piece, then redraws preview
         playerTile.addEventListener('click', () => {
+            handlePreviewMouseOut();
             gameInit.placeShipPiece(i, j, controller);
+            handlePreview(i, j);
         });
 
         // handles preview for ship placement
-        playerTile.addEventListener('mouseover', () => {
-            if (!isPlacement) {
-                return;
-            }
-            gameInit.displayShipPreview(i, j);
-        });
-        playerTile.addEventListener('mouseout', () => {
-            gameInit.resetTiles();
-        })
+        playerTile.addEventListener('mouseover', handlePreviewMouseOver);
+        playerTile.addEventListener('mouseout', handlePreviewMouseOut);
 
         // clone for AI tile
         const aiTile = tile.cloneNode();
