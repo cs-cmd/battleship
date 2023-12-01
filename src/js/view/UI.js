@@ -1,5 +1,7 @@
 import controller from "../controller/Controller.js";
 import GameInitializer from "./GameInitializer.js";
+import '../../res/gameboard-styles.css';
+import '../../res/page-styles.css';
 
 // UI elements
 const playerGameboard = document.querySelector('.gameboard.player');
