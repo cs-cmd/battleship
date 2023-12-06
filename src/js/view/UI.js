@@ -70,8 +70,8 @@ for(let i = 0; i < 10; i++) {
         const playerTile = tile.cloneNode();
         // resets tiles, places piece, then redraws preview
         playerTile.addEventListener('click', () => {
-            handlePreviewMouseOut();
             gameInit.placeShipPiece(i, j, controller);
+            handlePreviewMouseOut();
             handlePreview(i, j);
         });
 

@@ -22,10 +22,17 @@ const GameInitializer = (beginGame, writeStatusText) => {
         changeAxisMovingIcon.classList.toggle('right');
     }
 
+    // Initialize ship length
+    writeTitleForShip(5);
+
+    // and array of HTML elements to remove
+    let tilesToPreview = [];
+
     // places ship piece via controller
     function placeShipPiece(x, y, controller) {
         // if the current ship length is less than 1 (no more ships to place), return
-        if (currentShipLength <= 1) {
+        if (currentShipLength <= 1 ||
+            tilesToPreview === null) {
             return;
         }
     
@@ -37,19 +44,8 @@ const GameInitializer = (beginGame, writeStatusText) => {
             return;
         }
     
-        // determine the direction of the axis and color UI elements accordingly
-        switch(direction) {
-            case 'H':
-                for(let i = y; i < y + currentShipLength; i++) {
-                    let tile = document.querySelector(`.player .tile[x='${x}'][y='${i}']`);
-                    tile.classList.add('has-ship');
-                }
-                break;
-            case 'V':
-                for(let i = x; i < x + currentShipLength; i++) {
-                    let tile = document.querySelector(`.player .tile[x='${i}'][y='${y}']`)
-                    tile.classList.add('has-ship');
-                }
+        for(let i = 0; i < tilesToPreview.length; i++) {
+            tilesToPreview[i].classList.add('has-ship');
         }
     
         // decrease current ship length
@@ -62,12 +58,6 @@ const GameInitializer = (beginGame, writeStatusText) => {
             writeTitleForShip(currentShipLength);
         }
     }
-
-    // Initialize ship length
-    writeTitleForShip(5);
-
-    // and array of HTML elements to remove
-    let tilesToPreview = [];
 
     // display's ship preview to tiles
     const displayShipPreview = (x, y) => {
@@ -85,7 +75,7 @@ const GameInitializer = (beginGame, writeStatusText) => {
                     isInvalidIndex = true;
                 }
                 // get all tiles that will be included in the preview
-                for(let i = y; i < y + currentShipLength; i++) {
+                for(let i = y; i < y + currentShipLength && i < 10; i++) {
                     const tile = document.querySelector(`.player .tile[x="${x}"][y="${i}"]`);
                     if(tile.classList.contains('has-ship')) {
                         hasShip = true;
@@ -101,7 +91,7 @@ const GameInitializer = (beginGame, writeStatusText) => {
                     isInvalidIndex = true;
                 }
                 // get all tiles that will be included in the preview
-                for(let i = x; i < x + currentShipLength; i++) {
+                for(let i = x; i < x + currentShipLength && i < 10; i++) {
                     const tile = document.querySelector(`.player .tile[x="${i}"][y="${y}"]`);
                     if(tile.classList.contains('has-ship')) {
                         hasShip = true;
